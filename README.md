@@ -2,6 +2,8 @@
 
 Adds GraphQL support to your Sanic application.
 
+Based on [flask-graphql](https://github.com/graphql-python/flask-graphql) by Syrus Akbary. 
+
 ## Usage
 
 Just use the `GraphQLView` view from `sanic_graphql`
