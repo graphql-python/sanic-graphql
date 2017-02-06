@@ -3,6 +3,7 @@
 .cache
 .tox
 *.egg
+*.eggs
 *.egg-info
 .coverage
 /build/

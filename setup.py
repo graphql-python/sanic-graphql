@@ -1,16 +1,16 @@
 from setuptools import setup, find_packages
 
-required_packages = ['graphql-core>=1.0', 'flask>=0.7.0']
+required_packages = ['graphql-core>=1.0', 'sanic>=0.3.0']
 
 setup(
-    name='Flask-GraphQL',
-    version='1.4.0',
-    description='Adds GraphQL support to your Flask application',
+    name='Sanic-GraphQL',
+    version='0.3.0',
+    description='Adds GraphQL support to your Sanic application',
     long_description=open('README.rst').read(),
-    url='https://github.com/graphql-python/flask-graphql',
-    download_url='https://github.com/graphql-python/flask-graphql/releases',
-    author='Syrus Akbary',
-    author_email='me@syrusakbary.com',
+    url='https://github.com/grazor/sanic-graphql',
+    download_url='https://github.com/grazor/sanic-graphql/releases',
+    author='Sergey Porivaev',
+    author_email='porivaevs@gmail.com',
     license='MIT',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -25,7 +25,7 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
         'License :: OSI Approved :: MIT License',
     ],
-    keywords='api graphql protocol rest flask',
+    keywords='api graphql protocol sanic',
     packages=find_packages(exclude=['tests']),
     install_requires=required_packages,
     tests_require=['pytest>=2.7.3'],

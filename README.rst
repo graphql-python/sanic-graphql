@@ -1,18 +1,20 @@
-Flask-GraphQL
+Sanic-GraphQL
 =============
 
-|Build Status| |Coverage Status| |PyPI version|
+Adds GraphQL support to your Sanic application.
 
-Adds GraphQL support to your Flask application.
+Based on
+`flask-graphql <https://github.com/graphql-python/flask-graphql>`__
+by Syrus Akbary.
 
 Usage
 -----
 
-Just use the ``GraphQLView`` view from ``flask_graphql``
+Just use the ``GraphQLView`` view from ``sanic_graphql``
 
 .. code:: python
 
-    from flask_graphql import GraphQLView
+    from sanic_graphql import GraphQLView
 
     app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
 
@@ -54,10 +56,3 @@ request.
     class UserRootValue(GraphQLView):
         def get_root_value(self, request):
             return request.user
-
-.. |Build Status| image:: https://travis-ci.org/graphql-python/flask-graphql.svg?branch=master
-   :target: https://travis-ci.org/graphql-python/flask-graphql
-.. |Coverage Status| image:: https://coveralls.io/repos/graphql-python/flask-graphql/badge.svg?branch=master&service=github
-   :target: https://coveralls.io/github/graphql-python/flask-graphql?branch=master
-.. |PyPI version| image:: https://badge.fury.io/py/flask-graphql.svg
-   :target: https://badge.fury.io/py/flask-graphql

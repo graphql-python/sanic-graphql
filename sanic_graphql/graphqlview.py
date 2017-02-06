@@ -1,9 +1,8 @@
 import json
 
 import six
-from flask import Response, request
-from flask.views import View
-from werkzeug.exceptions import BadRequest, MethodNotAllowed
+from sanic.response import json
+from sanic.views import CompositionView
 
 from graphql import Source, execute, parse, validate
 from graphql.error import format_error as format_graphql_error
@@ -22,7 +21,7 @@ class HttpError(Exception):
         super(HttpError, self).__init__(message, *args, **kwargs)
 
 
-class GraphQLView(View):
+class GraphQLView(CompositionView):
     schema = None
     executor = None
     root_value = None
@@ -60,7 +59,7 @@ class GraphQLView(View):
     def get_executor(self, request):
         return self.executor
 
-    def dispatch_request(self):
+    def dispatch_request(self, requiest, *args, **kwargs):
         try:
             if request.method.lower() not in ('get', 'post'):
                 raise HttpError(MethodNotAllowed(['GET', 'POST'], 'GraphQL only supports GET and POST requests.'))

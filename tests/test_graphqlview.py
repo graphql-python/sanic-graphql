@@ -12,7 +12,6 @@ except ImportError:
     from urllib.parse import urlencode
 
 from .app import create_app
-from flask import url_for
 
 
 @pytest.fixture
@@ -20,7 +19,7 @@ def app():
     return create_app()
 
 def url_string(**url_params):
-    string = url_for('graphql')
+    string = '/graphql'
 
     if url_params:
         string += '?' + urlencode(url_params)

@@ -1,4 +1,4 @@
-from flask import render_template_string
+from sanic.response import text
 
 
 GRAPHIQL_VERSION = '0.7.1'
