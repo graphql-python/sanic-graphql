@@ -38,3 +38,8 @@ class UserRootValue(GraphQLView):
         return request.user
 
 ```
+
+# License
+Copyright for portions of project [flask-graphql](https://github.com/graphql-python/flask-graphql) are held by [Syrus Akbary](https://github.com/syrusakbary) as part of project sanic-graphql. All other copyright for project sanic-graphql are held by Porivav Sergey.
+
+This project is licensed under [MIT License](LICENSE).
