@@ -31,7 +31,7 @@ def client():
 
     return Client()
 
-def url_string(**url_params):
+def url_string(uri='/graphql', **url_params):
     string = '/graphql'
 
     if url_params:

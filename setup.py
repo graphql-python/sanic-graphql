@@ -28,7 +28,7 @@ setup(
     keywords='api graphql protocol sanic',
     packages=find_packages(exclude=['tests']),
     install_requires=required_packages,
-    tests_require=['pytest>=2.7.3', 'aiohttp', 'yarl==0.8.1'],
+    tests_require=['pytest>=2.7.3', 'aiohttp>=1.3.0', 'yarl==0.8.1', 'jinja2>=2.9.0'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',

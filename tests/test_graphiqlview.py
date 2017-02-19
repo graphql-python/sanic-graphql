@@ -1,22 +1,47 @@
 import pytest
 
-from .util import app, client, url_string
+from jinja2 import Environment
+
+from .util import app, client, url_string, create_app
 
 
-def test_graphiql_is_enabled(client):
-    response = client.get(app, uri='/graphql', headers={'Accept': 'text/html'})
-    assert response.status_code == 200
+@pytest.mark.parametrize('app', [create_app(graphiql=True)])
+def test_graphiql_is_enabled(app, client):
+    response = client.get(app,  uri=url_string(), headers={'Accept': 'text/html'})
+    assert response.status == 200
 
 
-def test_graphiql_renders_pretty(client):
-    response = client.get(app, uri=url_for('graphql', query='{test}'), headers={'Accept': 'text/html'})
-    assert response.status_code == 200
+@pytest.mark.parametrize('app', [create_app(graphiql=True)])
+def test_graphiql_simple_renderer(app, client):
+    response = client.get(app, uri=url_string(query='{test}'), headers={'Accept': 'text/html'})
+    assert response.status == 200
     pretty_response = (
         '{\n'
         '  "data": {\n'
         '    "test": "Hello World"\n'
         '  }\n'
         '}'
-    ).replace("\"","\\\"").replace("\n","\\n")
+    ).replace('\"','\\\"').replace('\n', '\\n')
 
-    assert pretty_response in response.data.decode('utf-8')
+    assert pretty_response in response.body.decode('utf-8')
+
+
+@pytest.mark.parametrize('app', [create_app(graphiql=True, jinja_env=Environment())])
+def test_graphiql_jinja_renderer(app, client):
+    response = client.get(app, uri=url_string(query='{test}'), headers={'Accept': 'text/html'})
+    assert response.status == 200
+    pretty_response = (
+        '{\n'
+        '  "data": {\n'
+        '    "test": "Hello World"\n'
+        '  }\n'
+        '}'
+    ).replace('\"','\\\"').replace('\n', '\\n')
+
+    assert pretty_response in response.body.decode('utf-8')
+
+
+@pytest.mark.parametrize('app', [create_app(graphiql=True)])
+def test_graphiql_html_is_not_accepted(app, client):
+    response = client.get(app, uri=url_string(), headers={'Accept': 'application/json'})
+    assert response.status == 400

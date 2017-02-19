@@ -178,7 +178,7 @@ def test_allows_sending_a_mutation_via_post(app, client):
 def test_allows_post_with_url_encoding(app, client):
     data = FormData()
     data.add_field('query', '{test}')
-    response = client.post(app, uri=url_string(), data=data('utf8'), headers={'content-type': data.content_type})
+    response = client.post(app, uri=url_string(), data=data('utf-8'), headers={'content-type': data.content_type})
 
     assert response.status == 200
     assert response_json(response) == {
