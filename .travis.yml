@@ -1,0 +1,18 @@
+language: python
+sudo: false
+matrix:
+  include:
+  - python: '3.5'
+    env: TOX_ENV=py35,import-order,flake8
+  - python: '3.6'
+    env: TOX_ENV=py36
+cache:
+  directories:
+  - $HOME/.cache/pip
+  - $TRAVIS_BUILD_DIR/.tox
+install:
+- pip install tox coveralls
+script:
+- tox -e $TOX_ENV -- --cov=sanic_graphql
+after_success:
+- coveralls
