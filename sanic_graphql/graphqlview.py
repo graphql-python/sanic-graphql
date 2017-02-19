@@ -34,6 +34,7 @@ class GraphQLView(HTTPMethodView):
     graphiql_template = None
     middleware = None
     batch = False
+    jinja_env = None
 
     methods = ['GET', 'POST', 'PUT', 'DELETE']
 
@@ -67,7 +68,7 @@ class GraphQLView(HTTPMethodView):
                 raise HttpError(SanicException('GraphQL only supports GET and POST requests.', status_code=405))
 
             data = self.parse_body(request)
-            show_graphiql = self.graphiql and self.can_display_graphiql(data)
+            show_graphiql = self.graphiql and self.can_display_graphiql(request, data)
 
             if self.batch:
                 responses = [self.get_response(request, entry) for entry in data]
@@ -79,6 +80,7 @@ class GraphQLView(HTTPMethodView):
             if show_graphiql:
                 query, variables, operation_name, id = self.get_graphql_params(request, data)
                 return render_graphiql(
+                    jinja_env = self.jinja_env,
                     graphiql_version=self.graphiql_version,
                     graphiql_template=self.graphiql_template,
                     query=query,
@@ -157,7 +159,7 @@ class GraphQLView(HTTPMethodView):
 
         elif content_type == 'application/json':
             try:
-                request_json = json.loads(request.body.decode('utf8'))
+                request_json = json.loads(request.body.decode('utf-8'))
                 if (self.batch and not isinstance(request_json, list)) or (
                         not self.batch and not isinstance(request_json, dict)):
                     raise Exception()
@@ -218,17 +220,15 @@ class GraphQLView(HTTPMethodView):
             return ExecutionResult(errors=[e], invalid=True)
 
     @classmethod
-    def can_display_graphiql(cls, data):
+    def can_display_graphiql(cls, request, data):
         raw = 'raw' in request.args or 'raw' in data
         return not raw and cls.request_wants_html(request)
 
     @classmethod
     def request_wants_html(cls, request):
-        best = request.accept_mimetypes \
-            .best_match(['application/json', 'text/html'])
-        return best == 'text/html' and \
-            request.accept_mimetypes[best] > \
-            request.accept_mimetypes['application/json']
+        # Ugly hack
+        accept = request.headers.get('accept', {})
+        return 'text/html' in accept or '*/*' in accept
 
     @staticmethod
     def get_graphql_params(request, data):

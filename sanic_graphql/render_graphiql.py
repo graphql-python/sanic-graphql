@@ -1,4 +1,12 @@
-from sanic.response import text
+import json
+import re
+
+from sanic.response import html
+
+try:
+    from jinja2 import Template
+except:
+    pass
 
 
 GRAPHIQL_VERSION = '0.7.1'
@@ -112,10 +120,10 @@ add "&raw" to the end of the URL within a browser.
         onEditQuery: onEditQuery,
         onEditVariables: onEditVariables,
         onEditOperationName: onEditOperationName,
-        query: {{ query|tojson }},
-        response: {{ result|tojson }},
-        variables: {{ variables|tojson }},
-        operationName: {{ operation_name|tojson }},
+        query: {{query|tojson}},
+        response: {{result|tojson}},
+        variables: {{variables|tojson}},
+        operationName: {{operation_name|tojson}},
       }),
       document.body
     );
@@ -124,9 +132,35 @@ add "&raw" to the end of the URL within a browser.
 </html>'''
 
 
-def render_graphiql(graphiql_version=None, graphiql_template=None, **kwargs):
+def process_var(template, name, value, jsonify=False):
+    pattern = r'{{\s*' + name + r'(|[^}]+)*\s*}}'
+    if jsonify:
+        value = json.dumps(value).replace('\\n', '\\\\n').replace('\"', '\\\"')
+        print(value)
+
+    return re.sub(pattern, value, template)
+
+def simple_renderer(template, **values):
+    replace = ['graphiql_version']
+    replace_jsonify = ['query', 'result', 'variables', 'operation_name']
+
+    for r in replace:
+        template = process_var(template, r, values.get(r, 'null'))
+
+    for r in replace_jsonify:
+        template = process_var(template, r, values.get(r, 'null'), True)
+
+    return template
+
+def render_graphiql(*, graphiql_version=None, graphiql_template=None, jinja_env=None, **kwargs):
     graphiql_version = graphiql_version or GRAPHIQL_VERSION
     template = graphiql_template or TEMPLATE
+    kwargs['graphiql_version'] = graphiql_version
 
-    return render_template_string(
-        template, graphiql_version=graphiql_version, **kwargs)
+    if jinja_env:
+        template = Template(template)
+        source = template.render(**kwargs)
+    else:
+        source = simple_renderer(template, **kwargs)
+
+    return html(source)
