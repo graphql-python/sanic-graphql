@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-required_packages = ['graphql-core>=1.0', 'sanic>=0.3.0']
+required_packages = ['graphql-core>=1.0', 'sanic>=0.3.1']
 
 setup(
     name='Sanic-GraphQL',
-    version='0.3.0',
+    version='0.3.1',
     description='Adds GraphQL support to your Sanic application',
     long_description=open('README.rst').read(),
     url='https://github.com/grazor/sanic-graphql',
@@ -28,7 +28,7 @@ setup(
     keywords='api graphql protocol sanic',
     packages=find_packages(exclude=['tests']),
     install_requires=required_packages,
-    tests_require=['pytest>=2.7.3'],
+    tests_require=['pytest>=2.7.3', 'aiohttp', 'yarl==0.8.1'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
