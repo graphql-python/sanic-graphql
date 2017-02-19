@@ -140,6 +140,7 @@ def process_var(template, name, value, jsonify=False):
 
     return re.sub(pattern, value, template)
 
+
 def simple_renderer(template, **values):
     replace = ['graphiql_version']
     replace_jsonify = ['query', 'result', 'variables', 'operation_name']
@@ -151,6 +152,7 @@ def simple_renderer(template, **values):
         template = process_var(template, r, values.get(r, 'null'), True)
 
     return template
+
 
 def render_graphiql(*, graphiql_version=None, graphiql_template=None, jinja_env=None, **kwargs):
     graphiql_version = graphiql_version or GRAPHIQL_VERSION

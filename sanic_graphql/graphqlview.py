@@ -80,7 +80,7 @@ class GraphQLView(HTTPMethodView):
             if show_graphiql:
                 query, variables, operation_name, id = self.get_graphql_params(request, data)
                 return render_graphiql(
-                    jinja_env = self.jinja_env,
+                    jinja_env=self.jinja_env,
                     graphiql_version=self.graphiql_version,
                     graphiql_template=self.graphiql_template,
                     query=query,
