@@ -1,20 +1,15 @@
 import pytest
 
-from .app import create_app
-
-
-@pytest.fixture
-def app():
-    return create_app(graphiql=True)
+from .util import app, client, url_string
 
 
 def test_graphiql_is_enabled(client):
-    response = client.get('/graphql', headers={'Accept': 'text/html'})
+    response = client.get(app, uri='/graphql', headers={'Accept': 'text/html'})
     assert response.status_code == 200
 
 
 def test_graphiql_renders_pretty(client):
-    response = client.get(url_for('graphql', query='{test}'), headers={'Accept': 'text/html'})
+    response = client.get(app, uri=url_for('graphql', query='{test}'), headers={'Accept': 'text/html'})
     assert response.status_code == 200
     pretty_response = (
         '{\n'
