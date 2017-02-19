@@ -1,8 +1,10 @@
 import json
-
 import six
-from sanic.response import json
-from sanic.views import CompositionView
+from cgi import parse_header
+
+from sanic.response import HTTPResponse
+from sanic.views import HTTPMethodView
+from sanic.exceptions import SanicException
 
 from graphql import Source, execute, parse, validate
 from graphql.error import format_error as format_graphql_error
@@ -17,11 +19,11 @@ from .render_graphiql import render_graphiql
 class HttpError(Exception):
     def __init__(self, response, message=None, *args, **kwargs):
         self.response = response
-        self.message = message = message or response.description
+        self.message = message = message or response.args[0]
         super(HttpError, self).__init__(message, *args, **kwargs)
 
 
-class GraphQLView(CompositionView):
+class GraphQLView(HTTPMethodView):
     schema = None
     executor = None
     root_value = None
@@ -59,10 +61,10 @@ class GraphQLView(CompositionView):
     def get_executor(self, request):
         return self.executor
 
-    def dispatch_request(self, requiest, *args, **kwargs):
+    def dispatch_request(self, request, *args, **kwargs):
         try:
             if request.method.lower() not in ('get', 'post'):
-                raise HttpError(MethodNotAllowed(['GET', 'POST'], 'GraphQL only supports GET and POST requests.'))
+                raise HttpError(SanicException('GraphQL only supports GET and POST requests.', status_code=405))
 
             data = self.parse_body(request)
             show_graphiql = self.graphiql and self.can_display_graphiql(data)
@@ -85,19 +87,19 @@ class GraphQLView(CompositionView):
                     result=result
                 )
 
-            return Response(
-                status=status_code,
-                response=result,
-                content_type='application/json'
+            return HTTPResponse(
+                    status=status_code,
+                    body=result,
+                    content_type='application/json'
             )
 
         except HttpError as e:
-            return Response(
+            return HTTPResponse(
                 self.json_encode(request, {
                     'errors': [self.format_error(e)]
                 }),
-                status=e.response.code,
-                headers={'Allow': ['GET, POST']},
+                status=e.response.status_code,
+                headers={'Allow': 'GET, POST'},
                 content_type='application/json'
             )
 
@@ -105,6 +107,7 @@ class GraphQLView(CompositionView):
         query, variables, operation_name, id = self.get_graphql_params(request, data)
 
         execution_result = self.execute_graphql_request(
+            request,
             data,
             query,
             variables,
@@ -150,18 +153,17 @@ class GraphQLView(CompositionView):
     def parse_body(self, request):
         content_type = self.get_content_type(request)
         if content_type == 'application/graphql':
-            return {'query': request.data.decode()}
+            return {'query': request.body.decode()}
 
         elif content_type == 'application/json':
             try:
-                request_json = json.loads(request.data.decode('utf8'))
-                if self.batch:
-                    assert isinstance(request_json, list)
-                else:
-                    assert isinstance(request_json, dict)
-                return request_json
+                request_json = json.loads(request.body.decode('utf8'))
+                if (self.batch and not isinstance(request_json, list)) or (
+                        not self.batch and not isinstance(request_json, dict)):
+                    raise Exception()
             except:
-                raise HttpError(BadRequest('POST body sent invalid JSON.'))
+                raise HttpError(SanicException('POST body sent invalid JSON.', status_code=400))
+            return request_json
 
         elif content_type == 'application/x-www-form-urlencoded':
             return request.form
@@ -174,11 +176,11 @@ class GraphQLView(CompositionView):
     def execute(self, *args, **kwargs):
         return execute(self.schema, *args, **kwargs)
 
-    def execute_graphql_request(self, data, query, variables, operation_name, show_graphiql=False):
+    def execute_graphql_request(self, request, data, query, variables, operation_name, show_graphiql=False):
         if not query:
             if show_graphiql:
                 return None
-            raise HttpError(BadRequest('Must provide query string.'))
+            raise HttpError(SanicException('Must provide query string.', status_code=400))
 
         try:
             source = Source(query, name='GraphQL request')
@@ -197,8 +199,9 @@ class GraphQLView(CompositionView):
             if operation_ast and operation_ast.operation != 'query':
                 if show_graphiql:
                     return None
-                raise HttpError(MethodNotAllowed(
-                    ['POST'], 'Can only perform a {} operation from a POST request.'.format(operation_ast.operation)
+                raise HttpError(SanicException(
+                    'Can only perform a {} operation from a POST request.'.format(operation_ast.operation),
+                    status_code=405,
                 ))
 
         try:
@@ -237,7 +240,7 @@ class GraphQLView(CompositionView):
             try:
                 variables = json.loads(variables)
             except:
-                raise HttpError(BadRequest('Variables are invalid JSON.'))
+                raise HttpError(SanicException('Variables are invalid JSON.', status_code=400))
 
         operation_name = request.args.get('operationName') or data.get('operationName')
 
@@ -254,4 +257,9 @@ class GraphQLView(CompositionView):
     def get_content_type(request):
         # We use mimetype here since we don't need the other
         # information provided by content_type
-        return request.mimetype
+        if 'content-type' not in request.headers:
+            mimetype = 'text/plain'
+        else:
+            mimetype, params = parse_header(request.headers['content-type'])
+
+        return mimetype
