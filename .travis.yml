@@ -3,7 +3,7 @@ sudo: false
 matrix:
   include:
   - python: '3.5'
-    env: TOX_ENV=py35,import-order,flake8
+    env: TOX_ENV=py35,flake8
   - python: '3.6'
     env: TOX_ENV=py36
 cache:
