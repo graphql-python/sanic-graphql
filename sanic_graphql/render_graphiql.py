@@ -133,7 +133,7 @@ add "&raw" to the end of the URL within a browser.
 
 
 def process_var(template, name, value, jsonify=False):
-    pattern = r'{{\s*' + name + r'(|[^}]+)*\s*}}'
+    pattern = r'{{\s*' + name + r'(\s*|[^}]+)*\s*}}'
     if jsonify:
         value = json.dumps(value).replace('\\n', '\\\\n').replace('\"', '\\\"')
 
