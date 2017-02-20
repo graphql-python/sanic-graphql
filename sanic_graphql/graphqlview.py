@@ -62,7 +62,7 @@ class GraphQLView(HTTPMethodView):
     def get_executor(self, request):
         return self.executor
 
-    def dispatch_request(self, request, *args, **kwargs):
+    async def dispatch_request(self, request, *args, **kwargs):
         try:
             if request.method.lower() not in ('get', 'post'):
                 raise HttpError(SanicException('GraphQL only supports GET and POST requests.', status_code=405))
@@ -79,7 +79,7 @@ class GraphQLView(HTTPMethodView):
 
             if show_graphiql:
                 query, variables, operation_name, id = self.get_graphql_params(request, data)
-                return render_graphiql(
+                return await render_graphiql(
                     jinja_env=self.jinja_env,
                     graphiql_version=self.graphiql_version,
                     graphiql_template=self.graphiql_template,

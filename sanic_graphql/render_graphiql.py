@@ -3,11 +3,6 @@ import re
 
 from sanic.response import html
 
-try:
-    from jinja2 import Template
-except:
-    pass
-
 
 GRAPHIQL_VERSION = '0.7.1'
 
@@ -153,14 +148,17 @@ def simple_renderer(template, **values):
     return template
 
 
-def render_graphiql(*, graphiql_version=None, graphiql_template=None, jinja_env=None, **kwargs):
+async def render_graphiql(*, graphiql_version=None, graphiql_template=None, jinja_env=None, **kwargs):
     graphiql_version = graphiql_version or GRAPHIQL_VERSION
     template = graphiql_template or TEMPLATE
     kwargs['graphiql_version'] = graphiql_version
 
     if jinja_env:
-        template = Template(template)
-        source = template.render(**kwargs)
+        template = jinja_env.from_string(template)
+        if jinja_env.is_async:
+            source = await template.render_async(**kwargs)
+        else:
+            source = template.render(**kwargs)
     else:
         source = simple_renderer(template, **kwargs)
 
