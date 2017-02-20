@@ -13,6 +13,6 @@ cache:
 install:
 - pip install tox coveralls
 script:
-- tox -e $TOX_ENV -- --cov=sanic_graphql
+- tox -e $TOX_ENV
 after_success:
 - coveralls
