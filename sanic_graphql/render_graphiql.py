@@ -136,7 +136,6 @@ def process_var(template, name, value, jsonify=False):
     pattern = r'{{\s*' + name + r'(|[^}]+)*\s*}}'
     if jsonify:
         value = json.dumps(value).replace('\\n', '\\\\n').replace('\"', '\\\"')
-        print(value)
 
     return re.sub(pattern, value, template)
 
