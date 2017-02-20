@@ -1,3 +1,2 @@
 include README.md
-recursive-include sanic_graphql/static *
-recursive-include sanic_graphql/templates *
+

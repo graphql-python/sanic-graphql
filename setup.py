@@ -4,7 +4,7 @@ required_packages = ['graphql-core>=1.0', 'sanic>=0.3.1', 'pytest-runner']
 
 setup(
     name='Sanic-GraphQL',
-    version='0.3.1',
+    version='0.0.9',
     description='Adds GraphQL support to your Sanic application',
     long_description=open('README.rst').read(),
     url='https://github.com/grazor/sanic-graphql',
@@ -13,16 +13,11 @@ setup(
     author_email='porivaevs@gmail.com',
     license='MIT',
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: Implementation :: PyPy',
+        'Programming Language :: Python :: 3.6',
         'License :: OSI Approved :: MIT License',
     ],
     keywords='api graphql protocol sanic',
