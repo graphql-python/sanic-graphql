@@ -12,6 +12,9 @@ except ImportError:
     from urllib.parse import urlencode
 
 from aiohttp.helpers import FormData
+from graphql.type import GraphQLSchema, GraphQLField, GraphQLObjectType, GraphQLString
+
+
 
 
 from .util import app, client, url_string, create_app
@@ -538,3 +541,33 @@ def test_batch_allows_post_with_operation_name(app, client):
         },
         'status': 200,
     }]
+
+
+@pytest.mark.skip(reason='Waiting for sanic 0.3.2 release to test this')
+def test_asyncio_executor(client):
+    async def resolver(context, *_):
+        return 'hey'
+
+    async def resolver_2(context, *_):
+        return 'hey2'
+
+    def resolver_3(context, *_):
+        return 'hey3'
+
+    Type = GraphQLObjectType('Type', {
+        'a': GraphQLField(GraphQLString, resolver=resolver),
+        'b': GraphQLField(GraphQLString, resolver=resolver_2),
+        'c': GraphQLField(GraphQLString, resolver=resolver_3)
+    })
+
+
+    app = create_app(schema=GraphQLSchema(Type), async_executor=True)
+
+    query = '{a,b,c}'
+    response = client.get(app, uri=url_string(query=query))
+    print(response.body.decode('utf-8'))
+
+    assert response.status == 200
+    assert response_json(response) == {
+        'a': 'hey', 'b': 'hey2', 'c': 'hey3'
+    }
