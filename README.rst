@@ -1,11 +1,11 @@
+|travis| |coveralls|
+
 Sanic-GraphQL
 =============
 
-Adds GraphQL support to your Sanic application.
+Adds `GraphQL <http://graphql.org/>`__ support to your `Sanic <https://github.com/channelcat/sanic>`__ application.
 
-Based on
-`flask-graphql <https://github.com/graphql-python/flask-graphql>`__
-by Syrus Akbary.
+Based on `flask-graphql`_ by `Syrus Akbary`_.
 
 Usage
 -----
@@ -16,12 +16,25 @@ Just use the ``GraphQLView`` view from ``sanic_graphql``
 
     from sanic_graphql import GraphQLView
 
-    app.add_url_rule('/graphql', view_func=GraphQLView.as_view('graphql', schema=schema, graphiql=True))
+    app.add_route(GraphQLView.as_view(schema=Schema, graphiql=True), '/graphql')
 
     # Optional, for adding batch query support (used in Apollo-Client)
-    app.add_url_rule('/graphql/batch', view_func=GraphQLView.as_view('graphql', schema=schema, batch=True))
+    app.add_route(GraphQLView.as_view(schema=Schema, batch=True), '/graphql/batch')
 
-This will add ``/graphql`` and ``/graphiql`` endpoints to your app.
+This will add ``/graphql`` endpoint to your app.
+
+Sharing eventloop with Sanic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to pass Sanic's eventloop to GraphQL's ``AsyncioExecutor``, use ``before_start`` event:
+
+.. code:: python
+
+    def before_start(app, loop):
+        app.add_route(GraphQLView.as_view(schema=Schema, executor=AsyncioExecutor(loop=loop)), '/graphql')
+
+    app.run(before_start=before_start)
+
 
 Supported options
 ~~~~~~~~~~~~~~~~~
@@ -42,10 +55,13 @@ Supported options
    exploration).
 -  ``graphiql_template``: Inject a Jinja template string to customize
    GraphiQL.
+-  ``jinja_env``: Sets jinja environment to be used to process GraphiQL template. If Jinja's async mode is enabled (by ``enable_async=True``), uses 
+``Template.render_async`` instead of ``Template.render``. If environment is not set, fallbacks to simple regex-based renderer.
 -  ``batch``: Set the GraphQL view as batch (for using in
    `Apollo-Client <http://dev.apollodata.com/core/network.html#query-batching>`__
    or
    `ReactRelayNetworkLayer <https://github.com/nodkz/react-relay-network-layer>`__)
+
 
 You can also subclass ``GraphQLView`` and overwrite
 ``get_root_value(self, request)`` to have a dynamic root value per
@@ -56,3 +72,23 @@ request.
     class UserRootValue(GraphQLView):
         def get_root_value(self, request):
             return request.user
+
+License
+-------
+
+Copyright for portions of project `sanic-graphql`_ are held by `Syrus Akbary`_ as part of project `flask-graphql`_. All other copyright for project `sanic-graphql`_ 
+are held by `Sergey Porivaev <https://github.com/grazor>`__.
+
+This project is licensed under MIT License.
+
+
+
+.. _`flask-graphql` : https://github.com/graphql-python/flask-graphql
+.. _`Syrus Akbary`: https://github.com/syrusakbary
+.. _`sanic-graphql`: https://github.com/grazor/sanic-graphql
+
+.. |travis| image:: https://travis-ci.org/grazor/sanic-graphql.svg?branch=master 
+                  :target: https://travis-ci.org/grazor/sanic-graphql
+.. |coveralls| image:: https://coveralls.io/repos/github/grazor/sanic-graphql/badge.svg?branch=master
+                     :target: https://coveralls.io/github/grazor/sanic-graphql?branch=master
+
