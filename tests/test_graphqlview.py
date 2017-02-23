@@ -543,12 +543,14 @@ def test_batch_allows_post_with_operation_name(app, client):
     }]
 
 
-@pytest.mark.skip(reason='Waiting for sanic 0.3.2 release to test this')
+@pytest.mark.skip(reason='Waiting for sanic>0.3.1 release to test this')
 def test_asyncio_executor(client):
     async def resolver(context, *_):
+        await asyncio.sleep(0.001)
         return 'hey'
 
     async def resolver_2(context, *_):
+        await asyncio.sleep(0.003)
         return 'hey2'
 
     def resolver_3(context, *_):
