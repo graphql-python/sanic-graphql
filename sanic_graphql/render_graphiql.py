@@ -130,7 +130,11 @@ add "&raw" to the end of the URL within a browser.
 def process_var(template, name, value, jsonify=False):
     pattern = r'{{\s*' + name + r'(\s*|[^}]+)*\s*}}'
     if jsonify:
-        value = json.dumps(value).replace('\\n', '\\\\n').replace('\"', '\\\"')
+        value = json.dumps(value)
+        if value.startswith('"') and value.endswith('"') and len(value) > 2:
+            value = '"' + value[1:len(value)-1].replace('\\\\n','\\\\\\n').replace('\\n', '\\\\n').replace('\"', '\\\"') + '"'
+        else:
+            value = value.replace('\\\\n','\\\\\\n').replace('\\n', '\\\\n').replace('\"', '\\\"')
 
     return re.sub(pattern, value, template)
 
@@ -140,10 +144,10 @@ def simple_renderer(template, **values):
     replace_jsonify = ['query', 'result', 'variables', 'operation_name']
 
     for r in replace:
-        template = process_var(template, r, values.get(r, 'null'))
+        template = process_var(template, r, values.get(r, ''))
 
     for r in replace_jsonify:
-        template = process_var(template, r, values.get(r, 'null'), True)
+        template = process_var(template, r, values.get(r, ''), True)
 
     return template
 
