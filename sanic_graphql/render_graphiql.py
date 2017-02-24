@@ -152,7 +152,7 @@ def simple_renderer(template, **values):
     return template
 
 
-async def render_graphiql(*, graphiql_version=None, graphiql_template=None, jinja_env=None, **kwargs):
+async def render_graphiql(*, jinja_env=None, graphiql_version=None, graphiql_template=None, **kwargs):
     graphiql_version = graphiql_version or GRAPHIQL_VERSION
     template = graphiql_template or TEMPLATE
     kwargs['graphiql_version'] = graphiql_version

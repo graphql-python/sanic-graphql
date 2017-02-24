@@ -19,15 +19,18 @@ def client():
     class Client:
         def get(self, app, uri, **kwargs):
             kwargs['method'] = 'get'
-            return sanic_endpoint_test(app, uri=uri, gather_request=False, **kwargs)
+            return sanic_endpoint_test(app, uri=uri, gather_request=False,
+                                       server_kwargs=app.server_kwargs, **kwargs)
 
         def post(self, app, uri, **kwargs):
             kwargs['method'] = 'post'
-            return sanic_endpoint_test(app, uri=uri, gather_request=False, **kwargs)
+            return sanic_endpoint_test(app, uri=uri, gather_request=False,
+                                       server_kwargs=app.server_kwargs, **kwargs)
 
         def put(self, app, uri, **kwargs):
             kwargs['method'] = 'put'
-            return sanic_endpoint_test(app, uri=uri, gather_request=False, **kwargs)
+            return sanic_endpoint_test(app, uri=uri, gather_request=False,
+                                       server_kwargs=app.server_kwargs, **kwargs)
 
     return Client()
 

@@ -26,7 +26,7 @@ This will add `/graphql` endpoint to your app.
 
 ### Sharing eventloop with Sanic
 
-In order to pass Sanic’s eventloop to GraphQL’s `AsyncioExecutor`, use `before_start` event:
+In order to pass Sanic’s eventloop to GraphQL’s `AsyncioExecutor`, use `before_start` listener:
 
 ```python
 def before_start(app, loop):
@@ -41,7 +41,7 @@ app.run(before_start=before_start)
 -   `context`: A value to pass as the `context` to the `graphql()` function.
 -   `root_value`: The `root_value` you want to provide to `executor.execute`.
 -   `pretty`: Whether or not you want the response to be pretty printed JSON.
--   `executor`: The `Executor` that you want to use to execute queries.
+-   `executor`: The `Executor` that you want to use to execute queries. If an `AsyncExecutor` instance is provided, performs queries asynchronously within executor’s loop.
 -   `graphiql`: If `True`, may present [GraphiQL] when loaded directly from a browser (a useful tool for debugging and exploration).
 -   `graphiql_template`: Inject a Jinja template string to customize GraphiQL.
 -   `jinja_env`: Sets jinja environment to be used to process GraphiQL template. If Jinja’s async mode is enabled (by `enable_async=True`), uses 

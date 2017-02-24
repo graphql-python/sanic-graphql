@@ -6,12 +6,14 @@ from sanic.response import HTTPResponse
 from sanic.views import HTTPMethodView
 from sanic.exceptions import SanicException
 
+from promise import Promise
 from graphql import Source, execute, parse, validate
 from graphql.error import format_error as format_graphql_error
 from graphql.error import GraphQLError
 from graphql.execution import ExecutionResult
 from graphql.type.schema import GraphQLSchema
 from graphql.utils.get_operation_ast import get_operation_ast
+from graphql.execution.executors.asyncio import AsyncioExecutor
 
 from .render_graphiql import render_graphiql
 
@@ -36,13 +38,18 @@ class GraphQLView(HTTPMethodView):
     batch = False
     jinja_env = None
 
+    _enable_async = True
+
     methods = ['GET', 'POST', 'PUT', 'DELETE']
 
     def __init__(self, **kwargs):
         super(GraphQLView, self).__init__()
+
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
+
+        self._enable_async = self._enable_async and isinstance(kwargs.get('executor'), AsyncioExecutor)
 
         assert not all((self.graphiql, self.batch)), 'Use either graphiql or batch processing'
         assert isinstance(self.schema, GraphQLSchema), 'A Schema is required to be provided to GraphQLView.'
@@ -71,11 +78,14 @@ class GraphQLView(HTTPMethodView):
             show_graphiql = self.graphiql and self.can_display_graphiql(request, data)
 
             if self.batch:
-                responses = [self.get_response(request, entry) for entry in data]
+                responses = []
+                for entry in data:
+                    responses.append(await self.get_response(request, entry))
+
                 result = '[{}]'.format(','.join([response[0] for response in responses]))
                 status_code = max(responses, key=lambda response: response[1])[1]
             else:
-                result, status_code = self.get_response(request, data, show_graphiql)
+                result, status_code = await self.get_response(request, data, show_graphiql)
 
             if show_graphiql:
                 query, variables, operation_name, id = self.get_graphql_params(request, data)
@@ -105,10 +115,10 @@ class GraphQLView(HTTPMethodView):
                 content_type='application/json'
             )
 
-    def get_response(self, request, data, show_graphiql=False):
+    async def get_response(self, request, data, show_graphiql=False):
         query, variables, operation_name, id = self.get_graphql_params(request, data)
 
-        execution_result = self.execute_graphql_request(
+        execution_result = await self.execute_graphql_request(
             request,
             data,
             query,
@@ -175,10 +185,14 @@ class GraphQLView(HTTPMethodView):
 
         return {}
 
-    def execute(self, *args, **kwargs):
-        return execute(self.schema, *args, **kwargs)
+    async def execute(self, *args, **kwargs):
+        result = execute(self.schema, return_promise=self._enable_async, *args, **kwargs)
+        if isinstance(result, Promise):
+            return await result
+        else:
+            return result
 
-    def execute_graphql_request(self, request, data, query, variables, operation_name, show_graphiql=False):
+    async def execute_graphql_request(self, request, data, query, variables, operation_name, show_graphiql=False):
         if not query:
             if show_graphiql:
                 return None
@@ -207,7 +221,7 @@ class GraphQLView(HTTPMethodView):
                 ))
 
         try:
-            return self.execute(
+            return await self.execute(
                 ast,
                 root_value=self.get_root_value(request),
                 variable_values=variables or {},

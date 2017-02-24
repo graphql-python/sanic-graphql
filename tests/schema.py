@@ -1,3 +1,5 @@
+import asyncio
+
 from graphql.type.definition import GraphQLArgument, GraphQLField, GraphQLNonNull, GraphQLObjectType
 from graphql.type.scalars import GraphQLString
 from graphql.type.schema import GraphQLSchema
@@ -7,6 +9,7 @@ def resolve_raises(*_):
     raise Exception("Throws!")
 
 
+# Sync schema
 QueryRootType = GraphQLObjectType(
     name='QueryRoot',
     fields={
@@ -36,3 +39,24 @@ MutationRootType = GraphQLObjectType(
 )
 
 Schema = GraphQLSchema(QueryRootType, MutationRootType)
+
+
+# Schema with async methods
+async def resolver(context, *_):
+    await asyncio.sleep(0.001)
+    return 'hey'
+
+async def resolver_2(context, *_):
+    await asyncio.sleep(0.003)
+    return 'hey2'
+
+def resolver_3(context, *_):
+    return 'hey3'
+
+AsyncQueryType = GraphQLObjectType('AsyncQueryType', {
+    'a': GraphQLField(GraphQLString, resolver=resolver),
+    'b': GraphQLField(GraphQLString, resolver=resolver_2),
+    'c': GraphQLField(GraphQLString, resolver=resolver_3)
+})
+
+AsyncSchema = GraphQLSchema(AsyncQueryType)

@@ -24,9 +24,9 @@ Just use the ``GraphQLView`` view from ``sanic_graphql``
 This will add ``/graphql`` endpoint to your app.
 
 Sharing eventloop with Sanic
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to pass Sanic's eventloop to GraphQL's ``AsyncioExecutor``, use ``before_start`` event:
+In order to pass Sanic's eventloop to GraphQL's ``AsyncioExecutor``, use ``before_start`` listener:
 
 .. code:: python
 
@@ -47,16 +47,16 @@ Supported options
    ``executor.execute``.
 -  ``pretty``: Whether or not you want the response to be pretty printed
    JSON.
--  ``executor``: The ``Executor`` that you want to use to execute
-   queries.
+-  ``executor``: The ``Executor`` that you want to use to execute queries. If an ``AsyncExecutor`` instance is provided,
+   performs queries asynchronously within executor's loop.
 -  ``graphiql``: If ``True``, may present
    `GraphiQL <https://github.com/graphql/graphiql>`__ when loaded
    directly from a browser (a useful tool for debugging and
    exploration).
 -  ``graphiql_template``: Inject a Jinja template string to customize
    GraphiQL.
--  ``jinja_env``: Sets jinja environment to be used to process GraphiQL template. If Jinja's async mode is enabled (by ``enable_async=True``), uses 
-``Template.render_async`` instead of ``Template.render``. If environment is not set, fallbacks to simple regex-based renderer.
+-  ``jinja_env``: Sets jinja environment to be used to process GraphiQL template. If Jinja's async mode is enabled (by ``enable_async=True``), uses
+   ``Template.render_async`` instead of ``Template.render``. If environment is not set, fallbacks to simple regex-based renderer.
 -  ``batch``: Set the GraphQL view as batch (for using in
    `Apollo-Client <http://dev.apollodata.com/core/network.html#query-batching>`__
    or
