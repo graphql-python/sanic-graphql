@@ -1,4 +1,4 @@
-|travis| |coveralls|
+|travis| |coveralls| |pypi|
 
 Sanic-GraphQL
 =============
@@ -92,3 +92,5 @@ This project is licensed under MIT License.
 .. |coveralls| image:: https://coveralls.io/repos/github/grazor/sanic-graphql/badge.svg?branch=master
                      :target: https://coveralls.io/github/grazor/sanic-graphql?branch=master
 
+.. |pypi| image:: https://badge.fury.io/py/Sanic-GraphQL.svg
+                :target: https://badge.fury.io/py/Sanic-GraphQL
