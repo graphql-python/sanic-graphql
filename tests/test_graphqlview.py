@@ -17,7 +17,7 @@ from graphql.execution.executors.sync import SyncExecutor
 
 from sanic_graphql import GraphQLView
 
-from .app import create_app, url_string
+from .app import create_app, url_string, parametrize_sync_async_app_test
 from .schema import Schema, AsyncSchema
 
 
@@ -51,10 +51,7 @@ def test_allows_get_with_query_param(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_get_with_variable_values(app):
     _, response = app.client.get(uri=url_string(
         query='query helloWho($who: String){ test(who: $who) }',
@@ -67,10 +64,7 @@ def test_allows_get_with_variable_values(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_get_with_operation_name(app):
     _, response = app.client.get(uri=url_string(
         query='''
@@ -93,10 +87,7 @@ def test_allows_get_with_operation_name(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_reports_validation_errors(app):
     _, response = app.client.get(uri=url_string(
         query='{ test, unknownOne, unknownTwo }'
@@ -117,10 +108,7 @@ def test_reports_validation_errors(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_errors_when_missing_operation_name(app):
     _, response = app.client.get(uri=url_string(
         query='''
@@ -139,10 +127,7 @@ def test_errors_when_missing_operation_name(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_errors_when_sending_a_mutation_via_get(app):
     _, response = app.client.get(uri=url_string(
         query='''
@@ -159,10 +144,7 @@ def test_errors_when_sending_a_mutation_via_get(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_errors_when_selecting_a_mutation_within_a_get(app):
     _, response = app.client.get(uri=url_string(
         query='''
@@ -182,10 +164,7 @@ def test_errors_when_selecting_a_mutation_within_a_get(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_mutation_to_exist_within_a_get(app):
     _, response = app.client.get(uri=url_string(
         query='''
@@ -201,10 +180,7 @@ def test_allows_mutation_to_exist_within_a_get(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_post_with_json_encoding(app):
     _, response = app.client.post(uri=url_string(), data=j(query='{test}'), headers={'content-type': 'application/json'})
 
@@ -214,10 +190,7 @@ def test_allows_post_with_json_encoding(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_sending_a_mutation_via_post(app):
     _, response = app.client.post(uri=url_string(), data=j(query='mutation TestMutation { writeTest { test } }'), headers={'content-type': 'application/json'})
 
@@ -227,10 +200,7 @@ def test_allows_sending_a_mutation_via_post(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_post_with_url_encoding(app):
     data = FormData()
     data.add_field('query', '{test}')
@@ -242,10 +212,7 @@ def test_allows_post_with_url_encoding(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_supports_post_json_query_with_string_variables(app):
     _, response = app.client.post(uri=url_string(), data=j(
         query='query helloWho($who: String){ test(who: $who) }',
@@ -258,10 +225,7 @@ def test_supports_post_json_query_with_string_variables(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_supports_post_json_query_with_json_variables(app):
     _, response = app.client.post(uri=url_string(), data=j(
         query='query helloWho($who: String){ test(who: $who) }',
@@ -274,10 +238,7 @@ def test_supports_post_json_query_with_json_variables(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_supports_post_url_encoded_query_with_string_variables(app):
     _, response = app.client.post(uri=url_string(), data=urlencode(dict(
         query='query helloWho($who: String){ test(who: $who) }',
@@ -290,10 +251,7 @@ def test_supports_post_url_encoded_query_with_string_variables(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_supports_post_json_quey_with_get_variable_values(app):
     _, response = app.client.post(uri=url_string(
         variables=json.dumps({'who': "Dolly"})
@@ -307,10 +265,7 @@ def test_supports_post_json_quey_with_get_variable_values(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_post_url_encoded_query_with_get_variable_values(app):
     _, response = app.client.post(uri=url_string(
         variables=json.dumps({'who': "Dolly"})
@@ -324,10 +279,7 @@ def test_post_url_encoded_query_with_get_variable_values(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_supports_post_raw_text_query_with_get_variable_values(app):
     _, response = app.client.post(uri=url_string(
         variables=json.dumps({'who': "Dolly"})
@@ -342,10 +294,7 @@ def test_supports_post_raw_text_query_with_get_variable_values(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_post_with_operation_name(app):
     _, response = app.client.post(uri=url_string(), data=j(
         query='''
@@ -368,10 +317,7 @@ def test_allows_post_with_operation_name(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_allows_post_with_get_operation_name(app):
     _, response = app.client.post(uri=url_string(
         operationName='helloWorld'
@@ -394,10 +340,7 @@ def test_allows_post_with_get_operation_name(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False, pretty=True)),
-    (create_app(async_executor=True, pretty=True)),
-])
+@parametrize_sync_async_app_test('app', pretty=True)
 def test_supports_pretty_printing(app):
     _, response = app.client.get(uri=url_string(query='{test}'))
 
@@ -410,10 +353,7 @@ def test_supports_pretty_printing(app):
     )
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False, pretty=False)),
-    (create_app(async_executor=True, pretty=False)),
-])
+@parametrize_sync_async_app_test('app', pretty=False)
 def test_not_pretty_by_default(app):
     _, response = app.client.get(url_string(query='{test}'))
 
@@ -422,10 +362,7 @@ def test_not_pretty_by_default(app):
     )
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_supports_pretty_printing_by_request(app):
     _, response = app.client.get(uri=url_string(query='{test}', pretty='1'))
 
@@ -438,10 +375,7 @@ def test_supports_pretty_printing_by_request(app):
     )
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_field_errors_caught_by_graphql(app):
     _, response = app.client.get(uri=url_string(query='{thrower}'))
     assert response.status == 200
@@ -451,10 +385,7 @@ def test_handles_field_errors_caught_by_graphql(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_syntax_errors_caught_by_graphql(app):
     _, response = app.client.get(uri=url_string(query='syntaxerror'))
     assert response.status == 400
@@ -465,10 +396,7 @@ def test_handles_syntax_errors_caught_by_graphql(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_errors_caused_by_a_lack_of_query(app):
     _, response = app.client.get(uri=url_string())
 
@@ -478,10 +406,7 @@ def test_handles_errors_caused_by_a_lack_of_query(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_invalid_json_bodies(app):
     _, response = app.client.post(uri=url_string(), data='[]', headers={'content-type': 'application/json'})
 
@@ -491,10 +416,7 @@ def test_handles_invalid_json_bodies(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_incomplete_json_bodies(app):
     _, response = app.client.post(uri=url_string(), data='{"query":', headers={'content-type': 'application/json'})
 
@@ -504,10 +426,7 @@ def test_handles_incomplete_json_bodies(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_plain_post_text(app):
     _, response = app.client.post(uri=url_string(
         variables=json.dumps({'who': "Dolly"})
@@ -521,10 +440,7 @@ def test_handles_plain_post_text(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_poorly_formed_variables(app):
     _, response = app.client.get(uri=url_string(
         query='query helloWho($who: String){ test(who: $who) }',
@@ -536,10 +452,7 @@ def test_handles_poorly_formed_variables(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_handles_unsupported_http_methods(app):
     _, response = app.client.put(uri=url_string(query='{test}'))
     assert response.status == 405
@@ -549,10 +462,7 @@ def test_handles_unsupported_http_methods(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_passes_request_into_request_context(app):
     _, response = app.client.get(uri=url_string(query='{request}', q='testing'))
 
@@ -564,10 +474,7 @@ def test_passes_request_into_request_context(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False, context="CUSTOM CONTEXT")),
-    (create_app(async_executor=True, context="CUSTOM CONTEXT")),
-])
+@parametrize_sync_async_app_test('app', context='CUSTOM CONTEXT')
 def test_supports_pretty_printing(app):
     _, response = app.client.get(uri=url_string(query='{context}'))
 
@@ -580,10 +487,7 @@ def test_supports_pretty_printing(app):
     }
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False)),
-    (create_app(async_executor=True)),
-])
+@parametrize_sync_async_app_test('app')
 def test_post_multipart_data(app):
     query = 'mutation TestMutation { writeTest { test } }'
 
@@ -609,10 +513,7 @@ def test_post_multipart_data(app):
     assert response_json(response) == {'data': {u'writeTest': {u'test': u'Hello World'}}}
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False, batch=True)),
-    (create_app(async_executor=True, batch=True)),
-])
+@parametrize_sync_async_app_test('app', batch=True)
 def test_batch_allows_post_with_json_encoding(app):
     _, response = app.client.post(
         uri=url_string(),
@@ -628,10 +529,7 @@ def test_batch_allows_post_with_json_encoding(app):
     }]
 
 
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False, batch=True)),
-    (create_app(async_executor=True, batch=True)),
-])
+@parametrize_sync_async_app_test('app', batch=True)
 def test_batch_supports_post_json_query_with_json_variables(app):
     _, response = app.client.post(
         uri=url_string(),
@@ -651,10 +549,7 @@ def test_batch_supports_post_json_query_with_json_variables(app):
     }]
  
           
-@pytest.mark.parametrize('app', [
-    (create_app(async_executor=False, batch=True)),
-    (create_app(async_executor=True, batch=True)),
-])
+@parametrize_sync_async_app_test('app', batch=True)
 def test_batch_allows_post_with_operation_name(app):
     _, response = app.client.post(
         uri=url_string(),
@@ -687,10 +582,9 @@ def test_batch_allows_post_with_operation_name(app):
 
 
 @pytest.mark.parametrize('app', [create_app(async_executor=True, schema=AsyncSchema)])
-def test_asyncio_executor(app):
+def test_async_schema(app):
     query = '{a,b,c}'
     _, response = app.client.get(uri=url_string(query=query))
-    print(response.body.decode('utf-8'))
 
     assert response.status == 200
     assert response_json(response) == {

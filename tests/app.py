@@ -1,4 +1,4 @@
-from functools import partial
+import pytest
 
 try:
     from urllib import urlencode
@@ -44,3 +44,12 @@ def url_string(uri='/graphql', **url_params):
 
     return string
 
+
+def parametrize_sync_async_app_test(arg, **extra_options):
+    def decorator(test):
+        apps = []
+        for ae in [False, True]:
+            apps.append(create_app(async_executor=ae, **extra_options))
+
+        return pytest.mark.parametrize('app', apps)(test)
+    return decorator
