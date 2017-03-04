@@ -30,10 +30,9 @@ In order to pass Sanic's eventloop to GraphQL's ``AsyncioExecutor``, use ``befor
 
 .. code:: python
 
-    def before_start(app, loop):
+    @app.listener('before_server_start')
+    def init_graphql(app, loop):
         app.add_route(GraphQLView.as_view(schema=Schema, executor=AsyncioExecutor(loop=loop)), '/graphql')
-
-    app.run(before_start=before_start)
 
 
 Supported options
@@ -47,7 +46,7 @@ Supported options
    ``executor.execute``.
 -  ``pretty``: Whether or not you want the response to be pretty printed
    JSON.
--  ``executor``: The ``Executor`` that you want to use to execute queries. If an ``AsyncExecutor`` instance is provided,
+-  ``executor``: The ``Executor`` that you want to use to execute queries. If an ``AsyncioExecutor`` instance is provided,
    performs queries asynchronously within executor's loop.
 -  ``graphiql``: If ``True``, may present
    `GraphiQL <https://github.com/graphql/graphiql>`__ when loaded
