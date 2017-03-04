@@ -132,9 +132,10 @@ def process_var(template, name, value, jsonify=False):
     if jsonify:
         value = json.dumps(value)
         if value.startswith('"') and value.endswith('"') and len(value) > 2:
-            value = '"' + value[1:len(value)-1].replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n').replace('\"', '\\\"') + '"'
+            value = ('"' + (value[1:len(value)-1].replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n')
+                                                 .replace('\\\\"', '"').replace('\"', '\\\"')) + '"')
         else:
-            value = value.replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n').replace('\"', '\\\"')
+            value = value.replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n')
 
     return re.sub(pattern, value, template)
 
