@@ -42,7 +42,7 @@ Supported options
 -  ``schema``: The ``GraphQLSchema`` object that you want the view to
    execute when it gets a valid request.
 -  ``context``: A value to pass as the ``context`` to the ``graphql()``
-   function.
+   function. By default is set to ``dict`` with request object at key ``request``.
 -  ``root_value``: The ``root_value`` you want to provide to
    ``executor.execute``.
 -  ``pretty``: Whether or not you want the response to be pretty printed

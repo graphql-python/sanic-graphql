@@ -59,9 +59,10 @@ class GraphQLView(HTTPMethodView):
         return self.root_value
 
     def get_context(self, request):
-        if self.context is not None:
-            return self.context
-        return request
+        context = self.context or {}
+        if isinstance(context, dict) and 'request' not in context:
+            context.update({'request': request})
+        return context
 
     def get_middleware(self, request):
         return self.middleware
