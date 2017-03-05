@@ -127,15 +127,24 @@ add "&raw" to the end of the URL within a browser.
 </html>'''
 
 
+def escape_js_value(value):
+    quotation = False
+    if value.startswith('"') and value.endswith('"'):
+        quotation = True
+        value = value[1:len(value)-1]
+
+    value = value.replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n')
+    if quotation:
+        value = '"' + value.replace('\\\\"', '"').replace('\"', '\\\"') + '"'
+
+    return value
+
+
 def process_var(template, name, value, jsonify=False):
     pattern = r'{{\s*' + name + r'(\s*|[^}]+)*\s*}}'
-    if jsonify:
+    if jsonify and value not in ['null', 'undefined']:
         value = json.dumps(value)
-        if value.startswith('"') and value.endswith('"') and len(value) > 2:
-            value = ('"' + (value[1:len(value)-1].replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n')
-                                                 .replace('\\\\"', '"').replace('\"', '\\\"')) + '"')
-        else:
-            value = value.replace('\\\\n', '\\\\\\n').replace('\\n', '\\\\n')
+        value = escape_js_value(value)
 
     return re.sub(pattern, value, template)
 
