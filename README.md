@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/grazor/sanic-graphql.svg?branch=master)](https://travis-ci.org/grazor/sanic-graphql) 
-[![Coverage Status](https://coveralls.io/repos/github/grazor/sanic-graphql/badge.svg?branch=master)](https://coveralls.io/github/grazor/sanic-graphql?branch=master)
+[![Build Status](https://travis-ci.org/graphql-python/sanic-graphql.svg?branch=master)](https://travis-ci.org/graphql-python/sanic-graphql)
+[![Coverage Status](https://coveralls.io/repos/github/graphql-python/sanic-graphql/badge.svg?branch=master)](https://coveralls.io/github/graphql-python/sanic-graphql?branch=master)
 [![PyPI version](https://badge.fury.io/py/Sanic-GraphQL.svg)](https://badge.fury.io/py/Sanic-GraphQL)
 
 Sanic-GraphQL
