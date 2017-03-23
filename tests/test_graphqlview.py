@@ -11,7 +11,11 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
-from aiohttp.helpers import FormData
+try:
+    from aiohttp.helpers import FormData
+except ImportError:
+    from aiohttp.formdata import FormData
+
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphql.execution.executors.sync import SyncExecutor
 
@@ -204,7 +208,7 @@ def test_allows_sending_a_mutation_via_post(app):
 def test_allows_post_with_url_encoding(app):
     data = FormData()
     data.add_field('query', '{test}')
-    _, response = app.client.post(uri=url_string(), data=data('utf-8'), headers={'content-type': data.content_type})
+    _, response = app.client.post(uri=url_string(), data=data(), headers={'content-type': 'application/x-www-form-urlencoded'})
 
     assert response.status == 200
     assert response_json(response) == {
