@@ -162,18 +162,24 @@ def simple_renderer(template, **values):
     return template
 
 
-async def render_graphiql(*, jinja_env=None, graphiql_version=None, graphiql_template=None, **kwargs):
+async def render_graphiql(jinja_env=None, graphiql_version=None, graphiql_template=None, params=None, result=None):
     graphiql_version = graphiql_version or GRAPHIQL_VERSION
     template = graphiql_template or TEMPLATE
-    kwargs['graphiql_version'] = graphiql_version
+    template_vars = {
+      'graphiql_version': graphiql_version,
+      'query': params and params.query,
+      'variables': params and params.variables,
+      'operation_name': params and params.operation_name,
+      'result': result,
+    }
 
     if jinja_env:
         template = jinja_env.from_string(template)
         if jinja_env.is_async:
-            source = await template.render_async(**kwargs)
+            source = await template.render_async(**template_vars)
         else:
-            source = template.render(**kwargs)
+            source = template.render(**template_vars)
     else:
-        source = simple_renderer(template, **kwargs)
+        source = simple_renderer(template, **template_vars)
 
     return html(source)
