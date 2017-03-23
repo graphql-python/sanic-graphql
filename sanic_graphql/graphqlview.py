@@ -71,15 +71,6 @@ class GraphQLView(HTTPMethodView):
     format_error = staticmethod(default_format_error)
     encode = staticmethod(json_encode)
 
-    async def await_execution_results(self, execution_results):
-        awaited_results = []
-        for execution_result in execution_results:
-            if isinstance(execution_result, Promise):
-                execution_result = await execution_result
-            awaited_results.append(execution_result)
-
-        return awaited_results
-
     async def dispatch_request(self, request, *args, **kwargs):
         try:
             request_method = request.method.lower()
@@ -105,7 +96,7 @@ class GraphQLView(HTTPMethodView):
                 middleware=self.get_middleware(request),
                 executor=self.get_executor(request),
             )
-            awaited_execution_results = await self.await_execution_results(execution_results)
+            awaited_execution_results = await Promise.all(execution_results)
             result, status_code = encode_execution_results(
                 awaited_execution_results,
                 is_batch=isinstance(data, list),

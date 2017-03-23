@@ -1,6 +1,11 @@
 from setuptools import setup, find_packages
 
-required_packages = ['graphql-core>=1.0', 'sanic>=0.4.0', 'pytest-runner']
+required_packages = [
+    'graphql-core>=1.0',
+    'graphql-server-core>=1.0.dev',
+    'sanic>=0.4.0',
+    'pytest-runner'
+]
 
 setup(
     name='Sanic-GraphQL',
