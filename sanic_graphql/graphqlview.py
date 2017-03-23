@@ -1,5 +1,3 @@
-import json
-import six
 from functools import partial
 from cgi import parse_header
 
@@ -7,7 +5,6 @@ from cgi import parse_header
 from promise import Promise
 from sanic.response import HTTPResponse
 from sanic.views import HTTPMethodView
-from sanic.exceptions import SanicException
 
 from graphql.type.schema import GraphQLSchema
 from graphql.execution.executors.asyncio import AsyncioExecutor
@@ -38,7 +35,6 @@ class GraphQLView(HTTPMethodView):
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
-
 
         self._enable_async = self._enable_async and isinstance(kwargs.get('executor'), AsyncioExecutor)
         assert isinstance(self.schema, GraphQLSchema), 'A Schema is required to be provided to GraphQLView.'
@@ -135,8 +131,7 @@ class GraphQLView(HTTPMethodView):
         elif content_type == 'application/json':
             return load_json_body(request.body.decode('utf8'))
 
-        elif content_type == 'application/x-www-form-urlencoded' \
-          or content_type == 'multipart/form-data':
+        elif content_type in ('application/x-www-form-urlencoded', 'multipart/form-data'):
             return request.form
 
         return {}
@@ -147,7 +142,7 @@ class GraphQLView(HTTPMethodView):
         # information provided by content_type
         if 'content-type' not in request.headers:
             return None
-        
+
         mimetype, _ = parse_header(request.headers['content-type'])
         return mimetype
 
