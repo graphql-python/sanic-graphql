@@ -36,7 +36,7 @@ class GraphQLView(HTTPMethodView):
             if hasattr(self, key):
                 setattr(self, key, value)
 
-        self._enable_async = self._enable_async and isinstance(kwargs.get('executor'), AsyncioExecutor)
+        self._enable_async = self._enable_async and isinstance(self.executor, AsyncioExecutor)
         assert isinstance(self.schema, GraphQLSchema), 'A Schema is required to be provided to GraphQLView.'
 
     # noinspection PyUnusedLocal
