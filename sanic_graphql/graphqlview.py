@@ -8,7 +8,9 @@ from sanic.views import HTTPMethodView
 
 from graphql.type.schema import GraphQLSchema
 from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphql_server import run_http_query, HttpQueryError, default_format_error, load_json_body, encode_execution_results, json_encode
+from graphql_server import (HttpQueryError, default_format_error,
+                            encode_execution_results, json_encode,
+                            load_json_body, run_http_query)
 
 from .render_graphiql import render_graphiql
 
@@ -73,7 +75,7 @@ class GraphQLView(HTTPMethodView):
             data = self.parse_body(request)
 
             show_graphiql = request_method == 'get' and self.should_display_graphiql(request)
-            catch = HttpQueryError if show_graphiql else None
+            catch = show_graphiql
 
             pretty = self.pretty or show_graphiql or request.args.get('pretty')
 
