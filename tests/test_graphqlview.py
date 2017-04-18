@@ -547,8 +547,8 @@ def test_batch_supports_post_json_query_with_json_variables(app):
     assert response_json(response) == [{
         'data': {'test': "Hello Dolly"},
     }]
- 
-          
+
+
 @parametrize_sync_async_app_test('app', batch=True)
 def test_batch_allows_post_with_operation_name(app):
     _, response = app.client.post(
@@ -588,3 +588,22 @@ def test_async_schema(app):
             'a': 'hey', 'b': 'hey2', 'c': 'hey3'
         }
     }
+
+
+@parametrize_sync_async_app_test('app')
+def test_preflight_request(app):
+    _, response = app.client.options(uri=url_string(), headers={
+        'Access-Control-Request-Method': 'POST',
+    })
+
+    assert response.status == 200
+
+
+@parametrize_sync_async_app_test('app')
+def test_preflight_incorrect_request(app):
+    _, response = app.client.options(uri=url_string(), headers={
+        'Access-Control-Request-Method': 'OPTIONS',
+    })
+
+    assert response.status == 400
+
