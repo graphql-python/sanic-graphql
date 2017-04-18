@@ -9,7 +9,7 @@ required_packages = [
 
 setup(
     name='Sanic-GraphQL',
-    version='1.0.2',
+    version='1.1.0',
     description='Adds GraphQL support to your Sanic application',
     long_description=open('README.rst').read(),
     url='https://github.com/graphql-python/sanic-graphql',
