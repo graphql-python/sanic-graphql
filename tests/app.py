@@ -6,7 +6,7 @@ except ImportError:
     from urllib.parse import urlencode
 
 from sanic import Sanic
-from sanic.testing import TestClient
+from sanic.testing import SanicTestClient
 from sanic_graphql import GraphQLView
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
@@ -32,7 +32,7 @@ def create_app(path='/graphql', **kwargs):
     else:
         app.add_route(GraphQLView.as_view(schema=schema, **kwargs), path)
 
-    app.client = TestClient(app)
+    app.client = SanicTestClient(app)
     return app
 
 
