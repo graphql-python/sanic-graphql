@@ -27,6 +27,7 @@ class GraphQLView(HTTPMethodView):
     middleware = None
     batch = False
     jinja_env = None
+    max_age = 86400
 
     _enable_async = True
 
@@ -79,40 +80,44 @@ class GraphQLView(HTTPMethodView):
 
             pretty = self.pretty or show_graphiql or request.args.get('pretty')
 
-            execution_results, all_params = run_http_query(
-                self.schema,
-                request_method,
-                data,
-                query_data=request.args,
-                batch_enabled=self.batch,
-                catch=catch,
+            if request_method != 'options':
+                execution_results, all_params = run_http_query(
+                    self.schema,
+                    request_method,
+                    data,
+                    query_data=request.args,
+                    batch_enabled=self.batch,
+                    catch=catch,
 
-                # Execute options
-                return_promise=self._enable_async,
-                root_value=self.get_root_value(request),
-                context_value=self.get_context(request),
-                middleware=self.get_middleware(request),
-                executor=self.get_executor(request),
-            )
-            awaited_execution_results = await Promise.all(execution_results)
-            result, status_code = encode_execution_results(
-                awaited_execution_results,
-                is_batch=isinstance(data, list),
-                format_error=self.format_error,
-                encode=partial(self.encode, pretty=pretty)
-            )
-
-            if show_graphiql:
-                return await self.render_graphiql(
-                    params=all_params[0],
-                    result=result
+                    # Execute options
+                    return_promise=self._enable_async,
+                    root_value=self.get_root_value(request),
+                    context_value=self.get_context(request),
+                    middleware=self.get_middleware(request),
+                    executor=self.get_executor(request),
+                )
+                awaited_execution_results = await Promise.all(execution_results)
+                result, status_code = encode_execution_results(
+                    awaited_execution_results,
+                    is_batch=isinstance(data, list),
+                    format_error=self.format_error,
+                    encode=partial(self.encode, pretty=pretty)
                 )
 
-            return HTTPResponse(
-                result,
-                status=status_code,
-                content_type='application/json'
-            )
+                if show_graphiql:
+                    return await self.render_graphiql(
+                        params=all_params[0],
+                        result=result
+                    )
+
+                return HTTPResponse(
+                    result,
+                    status=status_code,
+                    content_type='application/json'
+                )
+
+            else:
+                return self.process_preflight(request)
 
         except HttpQueryError as e:
             return HTTPResponse(
@@ -157,3 +162,23 @@ class GraphQLView(HTTPMethodView):
     def request_wants_html(self, request):
         accept = request.headers.get('accept', {})
         return 'text/html' in accept or '*/*' in accept
+
+    def process_preflight(self, request):
+        """ Preflight request support for apollo-client
+        https://www.w3.org/TR/cors/#resource-preflight-requests """
+        origin = request.headers.get('Origin', '')
+        method = request.headers.get('Access-Control-Request-Method', '').upper()
+
+        if method and method in self.methods:
+            return HTTPResponse(
+                status=200,
+                headers={
+                    'Access-Control-Allow-Origin': origin,
+                    'Access-Control-Allow-Methods': ', '.join(self.methods),
+                    'Access-Control-Max-Age': str(self.max_age),
+                }
+            )
+        else:
+            return HTTPResponse(
+                status=400,
+            )
