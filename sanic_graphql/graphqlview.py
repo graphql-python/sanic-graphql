@@ -47,7 +47,7 @@ class GraphQLView(HTTPMethodView):
         return self.root_value
 
     def get_context(self, request):
-        context = self.context or {}
+        context = self.context.copy() if self.context else {}
         if isinstance(context, dict) and 'request' not in context:
             context.update({'request': request})
         return context
