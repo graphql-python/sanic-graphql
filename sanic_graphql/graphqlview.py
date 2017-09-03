@@ -1,3 +1,4 @@
+from collections import Mapping
 from functools import partial
 from cgi import parse_header
 
@@ -47,8 +48,13 @@ class GraphQLView(HTTPMethodView):
         return self.root_value
 
     def get_context(self, request):
-        context = self.context.copy() if self.context else {}
-        if isinstance(context, dict) and 'request' not in context:
+        context = (
+            self.context.copy()
+            if self.context and
+            isinstance(self.context, Mapping)
+            else {}
+        )
+        if isinstance(context, Mapping) and 'request' not in context:
             context.update({'request': request})
         return context
 
