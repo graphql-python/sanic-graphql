@@ -484,11 +484,8 @@ def test_supports_pretty_printing(app):
 
 
     assert response.status == 200
-    assert response_json(response) == {
-        'data': {
-            'context': 'CUSTOM CONTEXT'
-        }
-    }
+    assert 'data' in response_json(response)
+    assert response_json(response)['data']['context'] == "{'request': {}}"
 
 
 @parametrize_sync_async_app_test('app')
@@ -499,9 +496,9 @@ def test_post_multipart_data(app):
             'Content-Disposition: form-data; name="query"\r\n' +
             '\r\n' +
             query + '\r\n' +
-            '------sanicgraphql--\r\n' + 
-            'Content-Type: text/plain; charset=utf-8\r\n' + 
-            'Content-Disposition: form-data; name="file"; filename="text1.txt"; filename*=utf-8\'\'text1.txt\r\n' + 
+            '------sanicgraphql--\r\n' +
+            'Content-Type: text/plain; charset=utf-8\r\n' +
+            'Content-Disposition: form-data; name="file"; filename="text1.txt"; filename*=utf-8\'\'text1.txt\r\n' +
             '\r\n' +
             '\r\n' +
             '------sanicgraphql--\r\n'
