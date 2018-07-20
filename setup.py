@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 required_packages = [
-    'graphql-core>=1.0',
-    'graphql-server-core>=1.1rc0',
+    'graphql-core>=2.1',
+    'graphql-server-core>=1.1.1',
     'sanic>=0.5.1',
     'pytest-runner'
 ]
