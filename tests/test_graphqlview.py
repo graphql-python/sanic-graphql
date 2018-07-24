@@ -385,7 +385,7 @@ def test_handles_field_errors_caught_by_graphql(app):
     assert response.status == 200
     assert response_json(response) == {
         'data': None,
-        'errors': [{'locations': [{'column': 2, 'line': 1}], 'message': 'Throws!'}]
+        'errors': [{'locations': [{'column': 2, 'line': 1}], 'message': 'Throws!', 'path': ['thrower']}]
     }
 
 
@@ -394,9 +394,12 @@ def test_handles_syntax_errors_caught_by_graphql(app):
     _, response = app.client.get(uri=url_string(query='syntaxerror'))
     assert response.status == 400
     assert response_json(response) == {
-        'errors': [{'locations': [{'column': 1, 'line': 1}],
-                    'message': 'Syntax Error GraphQL request (1:1) '
-                               'Unexpected Name "syntaxerror"\n\n1: syntaxerror\n   ^\n'}]
+        'errors': [
+            {
+                'locations': [{'column': 1, 'line': 1}],
+                'message': 'Syntax Error GraphQL (1:1) Unexpected Name "syntaxerror"\n\n1: syntaxerror\n   ^\n'
+            }
+        ]
     }
 
 
@@ -482,10 +485,9 @@ def test_passes_request_into_request_context(app):
 def test_supports_pretty_printing(app):
     _, response = app.client.get(uri=url_string(query='{context}'))
 
-
     assert response.status == 200
     assert 'data' in response_json(response)
-    assert response_json(response)['data']['context'] == "{'request': {}}"
+    assert response_json(response)['data']['context'] == "{'request': <Request: GET /graphql>}"
 
 
 @parametrize_sync_async_app_test('app')
