@@ -12,7 +12,7 @@ setup(
     name="Sanic-GraphQL",
     version="1.1.0",
     description="Adds GraphQL support to your Sanic application",
-    long_description=open("README.rst").read(),
+    long_description=open("README.rst", encoding="utf-8").read(),
     url="https://github.com/graphql-python/sanic-graphql",
     download_url="https://github.com/graphql-python/sanic-graphql/releases",
     author="Sergey Porivaev",
