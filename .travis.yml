@@ -1,19 +1,25 @@
 language: python
-sudo: false
+
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+
 matrix:
   include:
   - python: '3.7'
     env: TOXENV=flake8
-  - python: '3.6'
-  - python: '3.7'
-  - python: '3.8'
+
 cache:
   directories:
   - $HOME/.cache/pip
   - $TRAVIS_BUILD_DIR/.tox
+
 install:
-- pip install tox tox-travis coveralls
+  - pip install tox tox-travis coveralls
+
 script:
-- tox
+  - tox
+
 after_success:
-- coveralls
+  - coveralls
