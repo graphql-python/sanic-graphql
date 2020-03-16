@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 required_packages = [
     "graphql-core>=2.1,<3",
     "graphql-server-core>=1.1.1,<2",
-    "sanic>=0.5.1",
+    "sanic>=0.5.1,<19",
 ]
 
-tests_require = ["pytest>=2.7.3", "aiohttp>=1.3.0", "yarl>=0.9.6", "jinja2>=2.9.0"]
+tests_require = ["pytest>=2.7.3", "aiohttp>=3.5.0,<4", "yarl>=1.0,<2.0", "jinja2==2.9.0"]
 
 setup(
     name="Sanic-GraphQL",
