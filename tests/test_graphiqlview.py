@@ -19,7 +19,7 @@ def pretty_response():
 
 @parametrize_sync_async_app_test('app', graphiql=True)
 def test_graphiql_is_enabled(app):
-    _, response = app.client.get( uri=url_string(), headers={'Accept': 'text/html'})
+    _, response = app.client.get(uri=url_string(query="{test}"), headers={'Accept': 'text/html'})
     assert response.status == 200
 
 
@@ -48,14 +48,6 @@ def test_graphiql_jinja_async_renderer(app, pretty_response):
 def test_graphiql_html_is_not_accepted(app):
     _, response = app.client.get(uri=url_string(), headers={'Accept': 'application/json'})
     assert response.status == 400
-
-
-@parametrize_sync_async_app_test('app', graphiql=True)
-def test_graphiql_get_mutation(app, pretty_response):
-    query = 'mutation TestMutation { writeTest { test } }'
-    _, response = app.client.get(uri=url_string(query=query), headers={'Accept': 'text/html'})
-    assert response.status == 200
-    assert 'response: null' in response.body.decode('utf-8')
 
 
 @pytest.mark.parametrize('app', [create_app(async_executor=True, graphiql=True, schema=AsyncSchema)])
