@@ -14,6 +14,6 @@ cache:
 install:
 - pip install tox tox-travis coveralls
 script:
-- tox
+- tox -e $TOX_ENV
 after_success:
 - coveralls
