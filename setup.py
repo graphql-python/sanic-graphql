@@ -6,7 +6,7 @@ required_packages = [
     "sanic>=0.5.1,<19",
 ]
 
-tests_require = ["pytest>=2.7.3", "aiohttp>=3.5.0,<4", "yarl>=1.0,<2.0", "jinja2==2.9.0"]
+tests_require = ["pytest>=2.7.3", "aiohttp>=3.5.0,<4", "yarl>=1.0,<2.0", "Jinja2>=2.10.1"]
 
 setup(
     name="Sanic-GraphQL",
