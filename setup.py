@@ -10,7 +10,7 @@ tests_require = ["pytest>=2.7.3", "aiohttp>=3.5.0,<4", "yarl>=1.0,<2.0", "Jinja2
 
 setup(
     name="Sanic-GraphQL",
-    version="1.1.0",
+    version="1.2.0",
     description="Adds GraphQL support to your Sanic application",
     long_description=open("README.rst", encoding="utf-8").read(),
     url="https://github.com/graphql-python/sanic-graphql",
