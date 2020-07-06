@@ -28,6 +28,7 @@ class GraphQLView(HTTPMethodView):
     middleware = None
     batch = False
     jinja_env = None
+    cors = False
     max_age = 86400
 
     _enable_async = True
@@ -174,15 +175,22 @@ class GraphQLView(HTTPMethodView):
         https://www.w3.org/TR/cors/#resource-preflight-requests """
         origin = request.headers.get('Origin', '')
         method = request.headers.get('Access-Control-Request-Method', '').upper()
+        headers = request.headers.get('Access-Control-Request-Headers', '')
 
         if method and method in self.methods:
-            return HTTPResponse(
-                status=200,
+            if self.cors:
                 headers={
                     'Access-Control-Allow-Origin': origin,
                     'Access-Control-Allow-Methods': ', '.join(self.methods),
-                    'Access-Control-Max-Age': str(self.max_age),
+                    'Access-Control-Allow-Headers': headers,
+                    'Access-Control-Allow-Age': str(self.max_age),
                 }
+            else:
+                headers = {}
+
+            return HTTPResponse(
+                status=200,
+                headers=headers,
             )
         else:
             return HTTPResponse(

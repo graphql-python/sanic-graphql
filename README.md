@@ -47,6 +47,7 @@ def init_graphql(app, loop):
 -   `jinja_env`: Sets jinja environment to be used to process GraphiQL template. If Jinja’s async mode is enabled (by `enable_async=True`), uses 
 `Template.render_async` instead of `Template.render`. If environment is not set, fallbacks to simple regex-based renderer.
 -   `batch`: Set the GraphQL view as batch (for using in [Apollo-Client] or [ReactRelayNetworkLayer])
+-   `cors`: If `True`, set basic CORS headers in response to CORS preflight requests, otherwise - don't set any CORS headers (It's recommended to use [Sanic-CORS] extension).
 
 You can also subclass `GraphQLView` and overwrite `get_root_value(self, request)` to have a dynamic root value per request.
 
@@ -73,4 +74,5 @@ This project is licensed under MIT License.
   [ReactRelayNetworkLayer]: https://github.com/nodkz/react-relay-network-layer
   [Sergey Porivaev]: https://github.com/grazor
   [sanic-graphql]: https://github.com/grazor/sanic-graphql
+  [sanic-cors]: https://github.com/ashleysommer/sanic-cors
 
