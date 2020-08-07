@@ -1,18 +1,31 @@
 from setuptools import setup, find_packages
 
-required_packages = [
-    "graphql-core>=2.1,<3",
-    "graphql-server-core>=1.1.1,<2",
-    "sanic>=0.5.1,<19",
+install_requires = [
+    "graphql-server[sanic]>=3.0.0b1",
 ]
 
-tests_require = ["pytest>=2.7.3", "aiohttp>=3.5.0,<4", "yarl>=1.0,<2.0", "Jinja2>=2.10.1"]
+tests_requires = [
+    "pytest>=5.4,<5.5",
+    "pytest-asyncio>=0.11.0",
+    "pytest-cov>=2.8,<3",
+    "aiohttp>=3.5.0,<4",
+    "Jinja2>=2.10.1,<3",
+]
+
+dev_requires = [
+    "flake8>=3.7,<4",
+    "isort>=4,<5",
+    "check-manifest>=0.40,<1",
+] + tests_requires
+
+with open("README.md", encoding="utf-8") as readme_file:
+    readme = readme_file.read()
 
 setup(
     name="Sanic-GraphQL",
     version="1.2.0",
     description="Adds GraphQL support to your Sanic application",
-    long_description=open("README.rst", encoding="utf-8").read(),
+    long_description=readme,
     url="https://github.com/graphql-python/sanic-graphql",
     download_url="https://github.com/graphql-python/sanic-graphql/releases",
     author="Sergey Porivaev",
@@ -29,9 +42,13 @@ setup(
     ],
     keywords="api graphql protocol sanic",
     packages=find_packages(exclude=["tests"]),
-    install_requires=required_packages,
-    tests_require=tests_require,
-    extras_require={"test": tests_require},
+    install_requires=install_requires,
+    tests_require=tests_requires,
+    extras_require={
+        'test': tests_requires,
+        'dev': dev_requires,
+    },
     include_package_data=True,
+    zip_safe=False,
     platforms="any",
 )
